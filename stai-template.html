@@ -1,0 +1,166 @@
+<div id="dropdown" style="display:none;">
+   <div class="dropdown" id="options-dropdown"
+      align="left">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+      _RSID_
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+         <li role="presentation">
+            <a href="javascript:genvectordata({templateindex:_INDEX_});" >Gen.Vector Index</a> 
+            <div class="singleLine"></div>
+            <a href="javascript:edittemp({templateindex:'_INDEX_'});" >Edit</a> 
+            <div class="singleLine"></div>
+            <a href="javascript:deletetemplate({rsid:_RSID_});" >Delete</a> 
+         </li>
+      </ul>
+   </div>
+</div>
+
+
+<div align="right">
+	<button class="btn btn-default orange-bg" onclick="submittemplatedata2();">Submit</button>
+</div>
+<span class="label label-default orange-bg">Client</span>
+<input type="text" id="client2" class="form-control">
+<span class="label label-default orange-bg">Template Text</span>
+<textarea class="form-control" id="templatetext" style="height:200px!important;"></textarea>
+
+
+
+<table class="grid">
+	<tr>
+		<th></th>
+		<th>Tamplate</th>
+		<th>Client</th>
+		<th>Vector Array</th> 
+	</tr>
+	<tbody id="tbody2"></tbody>
+</table>
+<div id="processinginfo2" style="height:200px;overflow-y:auto;" class="simpleBorder"></div>
+
+<script>
+debugger;
+var dropdown = $("#dropdown").html();
+var edittemplate = null;
+function printvectortable() {
+	$("#tbody2").html("");
+	for (i=0; i < TEMPLATE_DATA.length;i++) {
+		var t = TEMPLATE_DATA[i];
+		var content =  t.content_text.replace(/<[^>]+>/gi,"");
+		
+		var tr = "<tr id=\"templatetr" + i + "\">" + 
+				"<td>" + dropdown.replace(/_INDEX_/gi, i).replace(/_RSID_/gi, t.rsid) + "</td>" + 
+				"<td> <div style=\"height:100px;width:500px;overflow-x:auto;overflow-y:auto;\">" +content + "</div></td>"  +
+				"<td>" + t.client + "</td>" + 
+				"<td id=\"vectordata" + i + "\"> <div style=\"height:100px;width:200px;overflow-x:auto;overflow-y:auto;\">" + t.vectordata + "</div></td> " + 
+			"</tr>";
+		$("#tbody2").append(tr);
+				
+	}
+}
+
+
+
+
+function genvectordata(param) {
+	var t = TEMPLATE_DATA[param.templateindex];
+	var content =  t.content_text.replace(/<[^>]+>/gi,"");
+	var onsuccess = function(data) {
+                data = JSON.parse(data);
+			console.log(JSON.stringify(data));
+			var tindex = data.templateindex;
+
+			data = JSON.parse(data.data);
+			var template = TEMPLATE_DATA[tindex];
+			template.vectordata = data.data[0].embedding;
+			printvectortable();
+			submittemplatedata(template);        
+	};
+	genvectordata2({text:content, templateindex:param.templateindex, onsuccess:onsuccess });
+	$(".waiting").show();
+
+	$("#processinginfo2").html("<div id=\"reqid" + req.mapindex + "\"> <img src=\"/images/waiting.gif\" class=\"waiting\"> Waiting for response from ChatGPT for Embedding <div class=\"simpleBorder\">" + ( content.length > 200 ? content.substring(0, 200) + "...." : content)   + " </div> <div class=\"singleLine\"></div> </div> " + $("#processinginfo2").html() );
+
+
+
+}
+var submitformcount = 0;
+
+
+function submittemplatedata2() {
+	var client = $("#client2").val();
+	var text = $("#templatetext").val();
+	var template = {
+					client:client, 
+					content_text:text
+				};
+	if (edittemplate) {
+		template.vectordata = edittemplate.vectordata;
+		template.tag = edittemplate.tag;
+		template.rsid = edittemplate.rsid;
+		template.type = edittemplate.type;
+	}
+	edittemplate = null;
+	submittemplatedata(template);
+	setTimeout(function() { gettemplatedata();}, 2000);
+	setTimeout(function() {	printvectortable();alert("Update successful");},4000);
+}
+
+function edittemp(param) {
+	edittemplate = TEMPLATE_DATA[param.templateindex];
+	$("#templatetext").val(edittemplate.content_text);
+	$("#client2").val(edittemplate.client);
+
+}
+
+function submittemplatedata(template) {
+ var rsdata = [{
+                     testid:515,
+                     responsesetid: template.rsid ? template.rsid : 0,
+                     question : [
+                           {questionid:15038 , value: ["template_data"]},
+                           {questionid:15039, value:[template]}
+                      ]
+            }];
+
+           $("#responsesetdata").val( JSON.stringify(rsdata));
+
+        
+	if (submitformcount++ > 0) {
+		alert("Please wait, your information is being processed");
+		return false;
+	}
+	$("#waitingimg").show();
+
+	var onsuccess = function (data) {
+                        data = JSON.parse(data);
+			var rsid = data.responsesetdata[0].question[0].responsesetid;
+                        //gettemplatedata();
+			submitformcount = 0;
+			$(".waiting").hide();
+
+                  };
+	//onsuccess = param.onsuccess ? param.onsuccess : onsuccess;
+
+
+        ajaxRequestV2({
+                  htmlForm : document.testform,
+                  onsuccess : onsuccess
+         });
+} 
+
+function deletetemplate(params) {
+    if (!confirm("Are you sure ? ")) return false;
+    var url = "/ot.do?response=json&deleters=true&mode=apideleteresponseset&testid=515&responsesetid=" + params.rsid+ "&adminuserid="  + adminuserid + 
+                               "&apikey=" + encodeURIComponent(adminapikey);
+
+  
+    $("#templatetr" + params.rsid).remove();
+    ajaxRequestV2({url:url , onsuccess : function (data)  {}});
+
+}
+
+printvectortable();
+
+</script>
