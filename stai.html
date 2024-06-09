@@ -1,3 +1,567 @@
-
-
-<h1>STAI</h1>
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="utf-8">
+		<title></title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta id="viewport" name="viewport" content="width=device-width, initial-scale=0.3">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css">
+		<!-- script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+		<script src="/javascript/global.js?v=20220916" id="globaljssrc"></script>
+		<script src="/javascript/jquery.ui.autocomplete.html.js"></script>
+		<link href="/stylesheets/itpatil.com/ot.css?v=1" rel="stylesheet">
+		<script src="/javascript/jalert/jquery.alerts.js"></script>
+		<link href="/javascript/jalert/jquery.alerts.css" rel="stylesheet">
+		<script type="text/javascript" src="/javascript/countdown/jquery.countdownTimer.js"></script> 
+		<script src="/javascript/countdown/jquery.plugin.js"></script>
+		<script src="/javascript/countdown/jquery.countdown.js"></script>
+	</head>
+	<body style="margin:0px;padding:0px;">
+		<div id="defaultajaxdiv" style="display:none;"></div>
+		<form action="/ot.do" method="post" target="exceldlframe" style="display:none;"
+			name="exceldlform">
+			<input type="hidden" name="mode" value="exceldl">
+			<textarea name="data" style="display:none;"></textarea>
+		</form>
+		<div style="display:none;">
+			<iframe name="exceldlframe"
+				id="exceldlframe" src="" ></iframe>
+		</div>
+		<div  style="" >
+			<div id="maindiv" align="left" >
+				<div id="cd2" style="position:relative;left:30%;"></div>
+				<div style="margin:20px;">
+					<div id="pagerenderdiv">
+						<div align="center">
+							<div style="margin:20px;" align="left">
+								<table style="width:100%">
+									<tr>
+										<td style="width:400px;" valign="top">
+											<div style="width:400px;">
+												<span class="label label-default orange-bg">Client</span>
+												<input type="text" class="form-control" id="client" value="fnp">
+												<span class="label label-default orange-bg">History</span>
+												<select id="historydd" class="form-control" onchange="loadhistorydata();"></select>
+												<span class="label label-default orange-bg">Enter Your Marketing Email Requirement</span> | <a href="javascript:ipopup({url:baseurl.replace(/st-genai/gi,'st-genai-vectordata')});">Template Data</a>
+												<textarea id="message"  class="form-control" style="height:150px!important;" onkeyup="updateimgdesc();">SchoolHouse.com sells home LIGHTING, BED + BATH, HARDWARE,DECOR, FURNITURE, RUGS, UTILITY, KITCHEN + DINING, OUTDOOR . Schoolhouse.com is promoting 20% discount on all merchandize for a limited time, till 30 April 2024. SchoolHouse logo https://cdn.shopify.com/s/files/1/0528/0917/1134/files/logo.svg?v=1614285511. Use this logo in the header. Header background should be light grey color. Include 2 square shaped promotional images. Images should be placed between text. 
+          	</textarea>
+												<div style="max-height:200px;overflow-y:auto;">
+													<table class="grid">
+														<tr>
+															<th>Client</th>
+															<th>Template</th>
+															<th>Cosine Similarity Score</th>
+														</tr>
+														<tbody id="tbody3"></tbody>
+													</table>
+												</div>
+												<hr/>
+												<span class="label label-default orange-bg">Image Varient</span> | <span class="glyphicon glyphicon-refresh" onclick="getimagevar();"></span>
+												<input type="text" id="imageurl" class="form-control" paceholder="Enter image URL. PNG images only. " value="https://sample-videos.com/img/Sample-png-image-1mb.png">
+												*Only PNG format is supported
+												<div class="simpleBorder" id="imgvardiv"></div>
+												<hr/>
+												<button class="btn btn-default orange-bg" onclick="addrow();"><span class="glyphicon glyphicon-plus-sign"></span></button>
+												<table id="imgtable" class="grid" style="width:100%;">
+													<tr id="tr_rowid_" style="display:none;">
+														<td valign="top" onclick="removerow({rowid:_rowid_});" style="width:30px;">
+															<span class="glyphicon glyphicon-remove" ></span>
+														</td>
+														<td>
+															<select type="text" class="form-control" 
+																id="imgsize_rowid_" style="display:none;">
+																<option value="256x256">256x256</option>
+																<option value="512x512" >512x512</option>
+																<option value="1024x1024" selected>1024x1024</option>
+															</select>
+															<textarea class="form-control rowclass__rowid_ rowclasstextarea" 
+																id="imgdesc_rowid_" >home furniture sofa, chair, coffee table - text - 20 % off on all home furniture
+          				            </textarea>
+															<div id="imgpreview_rowid_"></div>
+														</td>
+													</tr>
+												</table>
+												<span class="btn btn-default orange-bg" onclick="_getimage();" style="display:block;">Submit</span>
+												<hr/>
+												<span class="label label-default orange-bg">Processing Info</span>
+												<div id="processinginfo" style="overflow-y:auto;max-height:200px;" class="simpleBorder"><br><br></div>
+											</div>
+										</td>
+										<td style="width:20px;"></td>
+										<td valign="top">
+											<span class="label label-default orange-bg">Generated HTML</span>
+											<textarea id="htmltext" class="form-control" style="height:150px!important;overflow-y:auto;" onkeyup="$('#htmlpreview').html(this.value);"></textarea>
+											<hr/>
+											<span class="label label-default orange-bg">Preview</span>
+											<div class="simpleBorder" id="htmlpreview">
+												<h1 align="center" > -------------- PREVIEW -------------- </h1>
+											</div>
+										</td>
+									</tr>
+								</table>
+								<script>
+									function addrow() {
+										var tr = $("#tr_rowid_").html();
+										 var currlen = $("#imgtable tr").length;
+										tr = tr.replace(/_rowid_/gi,currlen);
+										$("#imgtable").append("<tr id=\"tr" + currlen + "\">" + tr + "</tr>");
+									}
+									
+									function removerow(param) {
+										$("#tr" + param.rowid).remove();
+									}
+									addrow();
+									//addrow();
+									//$("#imgdesc2").val("lamps, home light fittings, lamp shades -  text - 20 % off from light fixtures and accessories");
+									function updateimgdesc() {
+										var message = $("#message").val();
+										message = "generate an image for a marketing campaign for " + message;
+										$("#imgdesc1").val(message);
+									}
+									
+								</script>
+							</div>
+						</div>
+						<script>
+							var REQ_JSON = {
+							     "headermap": [
+							          {
+							               "value": "application/json",
+							               "key": "Content-Type"
+							          },
+							          {
+							               "value": "application/json",
+							               "key": "Accept"
+							          }
+							     ],
+							     "params":  {"model":"gpt-3.5-turbo-16k-0613",
+								"messages":[
+								{"role": "system", "content": "You are a helpful assistant."},
+							    	//{"role": "system", "content": "Here is a templates : _TEMPLATETEXT_"},
+								{"content":"","role":"user"}]},
+							     "url": "https://api.openai.com/v1/chat/completions",
+							     "auth": "Bearer  " + chatgpttoken;
+							} 
+							var EMBEDDING_REQ_JSON = {
+							     "headermap": [
+							          {
+							               "value": "application/json",
+							               "key": "Content-Type"
+							          },
+							          {
+							               "value": "application/json",
+							               "key": "Accept"
+							          }
+							     ],
+							     "params":  {"model": "text-embedding-3-small","input":""},
+							     "url": "https://api.openai.com/v1/embeddings",
+							     "auth": "Bearer  " + chatgpttoken;
+							} ;
+							
+							
+							var IMAGEVAR_REQ_JSON = {
+							     "headermap": [
+							          {
+							               "value": "application/json",
+							               "key": "Content-Type"
+							          },
+							          {
+							               "value": "application/json",
+							               "key": "Accept"
+							          }
+							     ],
+							     "url": "http://ai.itpatil.com/ot.do?mode=imagevar&imgurl=_IMAGEURL_",
+								     "params":  "imgurl=_IMAGEURL_"
+								
+							    
+							} ;
+							
+							function genvectordata2(param) {
+							
+								var req = JSON.parse(JSON.stringify(EMBEDDING_REQ_JSON));
+								req.params.input = param.text;
+								req.params = JSON.stringify(req.params);
+								req.templateindex = param.templateindex;
+							
+							
+								$("#reqobj").val(JSON.stringify(req));
+								ajaxRequestV2({
+							                  htmlForm : document.apiform,
+							                  onsuccess : param.onsuccess
+							         });
+							
+							}
+							
+							
+							var REQ_MAP = [];
+							var REQ_COUNT = 0;
+							var TEMPLATE_DATA = [];
+							
+							
+							var PROMPT = "Please generate a marketing email template based on the following HTML reference template. Ensure the new template follows the same HTML structure but with updated content relevant to _CONTENT_ .\n\n**HTML Reference Template:**\n\n_TEMPLATETEXT_\n\nThe new template should:\n- Include a warm greeting to the customer.\n- Mention special offers and discounts available.\n- Suggest popular products.\n- Encourage the customer to visit the website and place an order.\n- Include a call-to-action emphasizing ease of ordering and timely delivery.\n\nEnsure the tone is friendly and appreciative. Add 2 promotional images with width of 400px and img src=\"_SRC_\". In the response, only send the updated template. Use the logo provided in the reference template.";
+							var baseurl = "/ot.do?mode=pagerender&pagename=st-genai&adminuserid=6764&addmargin=true&qoptimize=true";
+							
+							
+							function gethtml() {
+								var text = $("#message").val() ;
+								getimagevar();
+								genvectordata2({text:text, onsuccess:function (data) {
+										data = JSON.parse(data);
+										data = JSON.parse(data.data);
+										gethtml2( {vectordata:data.data[0].embedding, text:$("#message").val() });
+										
+									}});
+							}
+							
+							var imagevarsubmitcount = 0;
+							function getimagevar() {
+								var imgurl = $("#imageurl").val().trim();
+								if (!imgurl || imgurl == "") return;
+							
+								var imgreq = JSON.parse(JSON.stringify(IMAGEVAR_REQ_JSON));
+								imgreq.params = imgreq.params.replace(/_IMAGEURL_/gi, encodeURIComponent(imgurl));
+								imgreq.url = imgreq.url.replace(/_IMAGEURL_/gi, encodeURIComponent(imgurl));
+								$("#reqobj").val(JSON.stringify(imgreq));
+								if (imagevarsubmitcount++ > 0 ) return;
+							
+								$("#imgvardiv").html("<img src=\"/images/waiting.gif\">");
+							
+								ajaxRequestV2({
+							        	htmlForm : document.apiform,
+							                onsuccess : function (data) {
+							                        data = JSON.parse(data);
+										data = JSON.parse(data.data);
+										imagevarsubmitcount = 0;
+										$("#imgvardiv").html("<img src=\"" + data.data[0].url + "\" style=\"width:100%;\">");
+									}
+								});
+							}
+							
+							function gethtml2(param) {
+									$("#htmltext").val("");
+									$("#htmlpreview").html("");
+							
+									if (REQ_COUNT > 0 ) return;
+									REQ_COUNT++;
+							
+									var req = JSON.parse(JSON.stringify(REQ_JSON));
+									var rawmessage = param.text; //$("#message").val() ;
+									var templatetext = getsimilartemplate(param);
+									
+									//req.params.messages[1].content = req.params.messages[1].content.replace(/_TEMPLATETEXT_/gi, templatetext);
+									req.params.messages[1].content = PROMPT.replaceAll("_CONTENT_", rawmessage).replaceAll("_TEMPLATETEXT_", templatetext);
+							
+									req.params = JSON.stringify(req.params);
+									req.mapindex = REQ_MAP.length;
+									req.message = rawmessage;
+									req.imgdesc = [];
+									var ary = document.getElementsByClassName("rowclasstextarea");
+									for (i=1; i < ary.length;i++) {
+										var rowid = ary[i].id.replace("imgdesc", "");
+										console.log("id " + rowid);
+										req.imgdesc.push($("#imgdesc" + rowid).val());
+									}
+							
+									$("#processinginfo").html("<div id=\"reqid" + req.mapindex + "\"> <img src=\"/images/waiting.gif\" class=\"waitinggif\"> Waiting for response from ChatGPT for <div class=\"simpleBorder\">" + ( rawmessage.length > 200 ? rawmessage.substring(0, 200) + "...." : rawmessage)   + " </div> <div class=\"singleLine\"></div> </div> " + $("#processinginfo").html() );
+									
+								
+									REQ_MAP[req.mapindex] = req;
+							
+							
+							
+									$("#reqobj").val(JSON.stringify(req));
+								        ajaxRequestV2({
+							                  htmlForm : document.apiform,
+							                  onsuccess : function (data) {
+							                        data = JSON.parse(data);
+										console.log(JSON.stringify(data));
+										var reqobj = REQ_MAP.find(item => item.mapindex == data.mapindex);
+							
+										data = JSON.parse(data.data);
+										reqobj.responsedata = data;
+										var content = data.choices[0].message.content;
+										var imgary = document.getElementsByClassName("aiimg");
+										for (i=0; i < imgary.length;i++) {
+											content = content.replace(/```(html)?/gi,"").replace("_SRC_", imgary[i].value);
+										}
+										$("#htmltext").val(content);
+										$("#htmlpreview").html(content);
+										$(".waitinggif").hide();
+										//var rsid = data.responsesetdata[0].question[0].responsesetid;
+							                       REQ_COUNT = 0;
+										localStorage.setItem("REQ_MAP", JSON.stringify(REQ_MAP));
+										printreqmap();
+							                        
+							 		}
+							         });
+							}
+							
+							
+							function getsimilartemplate(param) {
+								var templatetext  = "";
+								var vectordata = param.vectordata;
+								var similar = -1;
+								var index = 0;
+								$("#tbody3").html("");
+								var client = $("#client").val();
+								for (i=0; i < TEMPLATE_DATA.length;i++) {
+									var template = TEMPLATE_DATA[i];
+									if (template.client != client) continue;
+							
+									var tvectordata = template.vectordata;
+									if (tvectordata) {
+										
+										var val = cosineSimilarity(vectordata, tvectordata);
+										if (val > similar) {
+											similar = val;
+											index = i;
+										}
+							
+										$("#tbody3").append("<tr>" + 
+																"<td>"  + client + "</td>" + 
+																"<td><div style=\"width:100px;height:50px;overflow:auto;\">" + template.content_text.replace(/<[^>]+>/gi,"").substring(0,200)  + "</div></td>" + 
+																"<td>" + val + "</td>" + 
+															"</tr>");
+									}
+								}
+								return TEMPLATE_DATA[index].content_text;
+							/**
+									for (i=0; i < TEMPLATE_DATA.length;i++) {
+										var template = TEMPLATE_DATA[i];
+										var tag = template.tag ? template.tag.split(",") : [];
+										for (ii=0; ii < tag.length;ii++ ) {
+											if ( rawmessage.toLowerCase().indexOf(tag[ii]) >= 0) {
+												templatetext = TEMPLATE_DATA[i].content_text;
+												console.log("tag[ii] " + tag[ii]);
+												break;
+											}	
+										}	
+									}		
+							**/
+								return templatetext;
+							}
+							
+							function gettemplatedata() {
+								ALLDATA = [];
+								TEMPLATE_DATA = [];
+								var tpsql = "select   r0.response_set_id \"rsid\", r0.answer_text \"type\"  ," + 
+							"  r1.answer_text \"json\"  " + 
+							
+							" from   ot_result r0 ," + 
+							"  ot_result r1 " + 
+							"  " + 
+							" where r0.admin_user_id=6764 and r0.test_id=515 " + 
+							" and r0.question_id= 15038" + 
+							" and r1.response_set_id=r0.response_set_id" + 
+							" and r1.question_id= 15039 " ;
+							
+									ajaxRequestV2({
+									url: "/ot.do?mode=apidblist&response=json&adminuserid=6764&sql=" + encodeURIComponent(tpsql),
+									onsuccess: function (data) {
+							
+										data = JSON.parse(data);
+										//debugger;
+										for (i = 0; i < data.rows.length; i++) {
+											//console.log(CACHEDATA[i].jsonrow);
+							                                 var r = JSON.parse(data.rows[i].json.replace("\t", ""));
+							                                 r.rsid = data.rows[i].rsid;
+							                               	r.type = data.rows[i].type;
+							                                 ALLDATA.push(r); 
+										}
+							                      TEMPLATE_DATA = ALLDATA.filter(item=> item.type == "template_data");
+									}
+								});	
+							}
+							
+							
+							function printreqmap() {
+								var map = localStorage.getItem("REQ_MAP");
+								if(!map) return;
+								REQ_MAP = JSON.parse(map);
+								console.log("map :  " + JSON.stringify(map));
+								$("#historydd").html("");
+								for (i=REQ_MAP.length-1; i >=0 ;i--) {
+									var message = REQ_MAP[i].message;
+									message = message.substring(0, 100) + ".... ";
+									$("#historydd").append("<option value=\"" + i + "\">" + (i+1) + ". " + message + "...</option>");
+								}
+								
+							}
+							function loadhistorydata() {
+								var map = localStorage.getItem("REQ_MAP");
+								if (!map) return;
+								REQ_MAP = JSON.parse(map);
+								var index = $("#historydd").val();
+								var message = REQ_MAP[index].message;//substring(PROMPT.length, REQ_MAP[index].message.length);
+								var imgdesc = REQ_MAP[index].imgdesc
+								$("#message").val(message);
+								 var currlen = $("#imgtable tr").length;
+							
+								for  (i=0;i < currlen;i++) {
+									$("#tr" + (i+1)).remove();
+								}
+							
+								for (i=0; i < imgdesc.length;i++) {
+									addrow();
+									$("#imgdesc" + (i+1)).val(imgdesc[i])	;
+								}
+							
+							}
+							
+							var REQ_IMG_JSON = {
+							     "headermap": [
+							          {
+							               "value": "application/json",
+							               "key": "Content-Type"
+							          },
+							          {
+							               "value": "application/json",
+							               "key": "Accept"
+							          }
+							     ],
+							     "params": {"model":"dall-e-3","prompt":"","n": 1,"size": "" ,"response_format":"url"},
+							     "url": "https://api.openai.com/v1/images/generations",
+							     "auth": "Bearer  " + chatgpttoken;
+							} 
+							debugger;
+							
+							function _getimage() {
+								var ary = document.getElementsByClassName("rowclasstextarea");
+								for (i=1; i < ary.length;i++) {
+									var rowid = ary[i].id.replace("imgdesc", "");
+									console.log("id " + rowid);
+									getimage({rowid:rowid});
+								}
+								gethtml();
+							
+							}
+							
+							function getimage(param) {
+								var imgdesc = $("#imgdesc" + param.rowid).val();
+								var imgsize  = $("#imgsize" + param.rowid).val();
+							       $("#imgpreview" + param.rowid ).html("");
+							
+								var req = JSON.parse(JSON.stringify(REQ_IMG_JSON));
+								req.params.prompt = imgdesc;
+								req.params.size = imgsize;
+								req.params = JSON.stringify(req.params);
+								req.type="img";
+								req.prompt = imgdesc;
+								req.rowid = param.rowid;
+								
+								$("#processinginfo").html("<div id=\"reqid" + req.mapindex + "\"> <img src=\"/images/waiting.gif\" class=\"waitinggif\"> Waiting for IMAGE from ChatGPT for <div class=\"simpleBorder\">" + ( imgdesc.length > 200 ? imgdesc.substring(0, 200) + "...." : imgdesc)   + " </div> <div class=\"singleLine\"></div> </div> " + $("#processinginfo").html() );
+							
+									$("#reqobj").val(JSON.stringify(req));
+							
+								        ajaxRequestV2({
+							                  htmlForm : document.apiform,
+							                  onsuccess : function (data) {
+							                        data = JSON.parse(data);
+										console.log(JSON.stringify(data));
+										var rowid = data.rowid;
+							
+										data = JSON.parse(data.data);
+							
+										$("#imgpreview" + rowid ).html("<img src=\"" + data.data[0].url + "\" style=\"height:200px;\"><br>" +
+																	"<input type=\"text\" class=\"form-control aiimg\" value=\"" + data.data[0].url + "\">");
+										var html = $("#htmltext").val().replace(/_SRC_/i,data.data[0].url);
+										$("#htmltext").val(html);
+										$("#htmlpreview").html(html);
+							
+										$(".waitinggif").hide();
+							                        
+							 		}
+							         });
+							}
+							
+							printreqmap();
+							loadhistorydata();
+						</script>
+						<form action="/ot.do" method="post" name="sqlform" id="sqlform" style="display:none;">
+							<input type="text" name="response" value="json">
+							<input type="text" name="adminuserid" value="" class="adminuserid">
+							<input type="text" name="apikey" value="" class="apikey">
+							<input type="text" name="sql" value="" class="sql">
+							<input type="text" name="mode" value="apidblist" >
+						</form>
+						<form action="/ot.do" method="post" name="apiform" style="display:none;">
+							<input type="hidden" name="mode" value="apiapicall">
+							<input type="hidden" name="response" value="json">
+							<input type="hidden" name="method" value="POST">
+							<textarea id="reqobj" name="reqobj"></textarea>
+						</form>
+						<form name="testform" id="testorm" onsubmit="return false"  action="/ot.do" method="post" style="display:none;">
+							<input type="text" name="apikey" class="apikey" value="">
+							<input type="text" name="adminuserid" class="adminuserid" value="">
+							<input type="text" name="mode" value="apiupdateresponse">
+							<input type="text" name="response" value="json">
+							<textarea name="responsesetdata" id="responsesetdata"></textarea>
+						</form>
+						<script>
+							$(".adminuserid").val(adminuserid);
+							$(".apikey").val(adminapikey);
+							gettemplatedata();
+							
+							
+							function cosineSimilarity(vecA, vecB) {
+							   if (vecA.length !== vecB.length) {
+							       throw new Error("Vectors must be of the same length");
+							   }
+							
+							   let dotProduct = 0;
+							   let magnitudeA = 0;
+							   let magnitudeB = 0;
+							
+							   for (let i = 0; i < vecA.length; i++) {
+							       dotProduct += vecA[i] * vecB[i];
+							       magnitudeA += vecA[i] * vecA[i];
+							       magnitudeB += vecB[i] * vecB[i];
+							   }
+							
+							   magnitudeA = Math.sqrt(magnitudeA);
+							   magnitudeB = Math.sqrt(magnitudeB);
+							
+							   if (magnitudeA === 0 || magnitudeB === 0) {
+							       throw new Error("One of the vectors is zero vector");
+							   }
+							
+							   return dotProduct / (magnitudeA * magnitudeB);
+							}
+						</script>
+					</div>
+				</div>
+				<div id="ipopup" load="true" style="z-index:1;display:none;position:absolute;width:95%;">
+					<div style="" align="right"  id="ipopup_close">
+						<b><span onclick="hideDiv('ipopup');" class="label label-warning"><span class="glyphicon glyphicon-remove"> </span> Close</b></span>
+					</div>
+					<div id="ipopupII" class="simpleBorder" style="overflow-x:auto;max-height:700px;overflow-y:auto;background:#fff;box-shadow:0px 3px 14px #666;"></div>
+				</div>
+				<div id="minipopup" style="display:none;">
+					<div style="z-index:10;position:absolute;background:#fff;"  class="simpleBorder boxshadow" >
+						<div align="right" >
+							<span class="label label-danger glyphicon glyphicon-remove" id="minipopupclose">
+							</span>
+						</div>
+						<div id="minipopupII"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var bodyheight = $(document).height() > $(window).height() ? $(document).height() : $(window).height();
+			$("#maindiv").css("height", bodyheight +"px");
+			$(".leftnav").css("height", "100%");
+			$(".leftnavlast").css("height", "100%");
+			//  alert("height : " + bodyheight + " " + $("#maindiv").height());
+		</script>
+	</body>
+</html>
