@@ -3,8 +3,19 @@
 	<div align="center">
 		<div style="margin:20px;" align="left">
 			<div align="right">
-				<a href="/ot.do?mode=stai&adminuserid=6764&mode2=deploy">Deploy from GIT</a>
-				V2
+			  <span onclick="var show = document.getElementById('uicontrol').style;show.display = show.display == 'none' ? 'block':'none';">UI Control </span>
+			  <div style="display:none;padding:20px;position:absolute;z-index:20;width:200px;right:100px;align:left;background-color:#fff;" id="uicontrol">
+			    <input type="checkbox" id="showvectortable" onclick="var show = this.checked ? 'block' : 'none';document.getElementById('vectordatatable').style.display=show;"> Show Vector Table
+			    <div class="singleLine"></div>
+			    <input type="checkbox" id="showhtml"  onclick="var show = this.checked ? 'block' : 'none';document.getElementById('generatedhtmldiv').style.display=show;"> Show HTML
+			    <div class="singleLine"></div>
+			    <input type="checkbox" id="showimagevar"  onclick="var show = this.checked ? 'block' : 'none';document.getElementById('imagevardiv').style.display=show;"> Show Image Variation
+			    <div class="singleLine"></div>
+
+			  </div>
+			  |
+			  <a href="/ot.do?mode=stai&adminuserid=6764&mode2=deploy">Deploy from GIT</a>
+			  V2
 			</div>
 			<table style="width:100%">
 				<tr>
@@ -12,12 +23,13 @@
 						<div style="width:400px;">
 							<span class="label label-default orange-bg">Client</span>
 							<input type="text" class="form-control" id="client" value="fnp">
-							<span class="label label-default orange-bg">History</span>
+							<span class="label label-default orange-bg">Prompt History</span>
 							<select id="historydd" class="form-control" onchange="loadhistorydata();"></select>
-							<span class="label label-default orange-bg">Enter Your Marketing Email Requirement</span> | <a href="javascript:ipopup({url:'/jsp/ot/stai-template.html'});">Template Data</a>
+							<span class="label label-default orange-bg">Enter Your Marketing Email Requirement</span> | 
+							<a href="javascript:ipopup({url:'/jsp/ot/stai-template.html'});">Template Data</a>
 							<textarea id="message"  class="form-control" style="height:150px!important;" onkeyup="updateimgdesc();">SchoolHouse.com sells home LIGHTING, BED + BATH, HARDWARE,DECOR, FURNITURE, RUGS, UTILITY, KITCHEN + DINING, OUTDOOR . Schoolhouse.com is promoting 20% discount on all merchandize for a limited time, till 30 April 2024. SchoolHouse logo https://cdn.shopify.com/s/files/1/0528/0917/1134/files/logo.svg?v=1614285511. Use this logo in the header. Header background should be light grey color. Include 2 square shaped promotional images. Images should be placed between text. 
 								</textarea>
-							<div style="max-height:200px;overflow-y:auto;">
+							<div style="max-height:200px;overflow-y:auto;display:none;" id="vectordatatable">
 								<table class="grid">
 									<tr>
 										<th>Client</th>
@@ -28,25 +40,44 @@
 								</table>
 							</div>
 							<hr/>
-							<span class="label label-default orange-bg">Image Varient</span> | <span class="glyphicon glyphicon-refresh" onclick="getimagevar();"></span>
-							<input type="text" id="imageurl" class="form-control" paceholder="Enter image URL. PNG images only. " value="https://sample-videos.com/img/Sample-png-image-1mb.png">
+
+							<div id="imagevardiv" style="display:none;">
+							  <span class="label label-default orange-bg">Image Varient</span> | 
+							  <span class="glyphicon glyphicon-refresh" onclick="getimagevar();"></span>
+	s
+							  <input type="text" id="imageurl" class="form-control" paceholder="Enter image URL. PNG images only. " value="https://sample-videos.com/img/Sample-png-image-1mb.png">
+
 							*Only PNG format is supported
-							<div class="simpleBorder" id="imgvardiv"></div>
-							<hr/>
-							<button class="btn btn-default orange-bg" onclick="addrow();"><span class="glyphicon glyphicon-plus-sign"></span></button>
-							<table id="imgtable" class="grid" style="width:100%;">
+
+							  <div class="simpleBorder" id="imgvardiv"></div>
+							</div>
+
+							
+
+							<span class="label label-default orange-bg">Image Gen.</span>
+							|
+							<span class="label label-default orange-bg" onclick="addrow();"><span class="glyphicon glyphicon-plus-sign"></span></span>
+							<table id="imgtable" class="grid" style="width:100%;display:;">
 								<tr id="tr_rowid_" style="display:none;">
 									<td valign="top"  style="width:30px;">
 										<span class="glyphicon glyphicon-remove" onclick="removerow({rowid:_rowid_});"></span>
-										| <span class="glyphicon glyphicon-refresh" onclick="getimage({rowid:_rowid_});"></span>
+										<br><span class="glyphicon glyphicon-refresh" onclick="getimage({rowid:_rowid_});"></span>
 
 									</td>
 									<td>
-										<select type="text" class="form-control" 
+										<select class="form-control" 
 											id="imgsize_rowid_" style="display:none;">
 											<option value="256x256">256x256</option>
 											<option value="512x512" >512x512</option>
 											<option value="1024x1024" selected>1024x1024</option>
+										</select>
+										
+										<select class="form-control" 
+											id="imgtype_rowid_" style="display:;">
+											<option value="image type photo">Photo (Real)</option>
+											<option value="image type doodle">Doodle</option>
+											<option value="image type comic">Comic</option>
+											<option value="image type charcoal sketch">Charcoal Sketch</option>
 										</select>
 										<textarea class="form-control rowclass__rowid_ rowclasstextarea" id="imgdesc_rowid_" >home furniture sofa, chair, coffee table - text - 20 % off on all home furniture</textarea>
 										<div id="imgpreview_rowid_"></div>
@@ -61,12 +92,14 @@
 					</td>
 					<td style="width:20px;"></td>
 					<td valign="top">
+					  <div id="generatedhtmldiv" style="display:none;">
 						<span class="label label-default orange-bg">Generated HTML</span>
 						<textarea id="htmltext" class="form-control" style="height:150px!important;overflow-y:auto;" onkeyup="$('#htmlpreview').html(this.value);"></textarea>
 						<hr/>
+					  </div>
 						<span class="label label-default orange-bg">Preview</span>
 						<div class="simpleBorder" id="htmlpreview">
-							<h1 align="center" > -------------- PREVIEW -------------- </h1>
+							<h1 align="center" > -------------- Generative AI Marketing Template -------------- </h1>
 						</div>
 					</td>
 				</tr>
@@ -440,12 +473,15 @@
 			var imgsize = $("#imgsize" + param.rowid).val();
 			$("#imgpreview" + param.rowid).html("");
 
+
+			var imgtype = $("#imgtype" + param.rowid).val();
+
 			var req = JSON.parse(JSON.stringify(REQ_IMG_JSON));
 			req.params.prompt = imgdesc;
 			req.params.size = imgsize;
 			req.params = JSON.stringify(req.params);
 			req.type = "img";
-			req.prompt = imgdesc;
+			req.prompt = imgdesc + ", " + imgtype;
 			req.rowid = param.rowid;
 
 			$("#processinginfo").html("<div id=\"reqid" + req.mapindex + "\"> <img src=\"/images/waiting.gif\" class=\"waitinggif\"> Waiting for IMAGE from ChatGPT for <div class=\"simpleBorder\">" + (imgdesc.length > 200 ? imgdesc.substring(0, 200) + "...." : imgdesc) + " </div> <div class=\"singleLine\"></div> </div> " + $("#processinginfo").html());
